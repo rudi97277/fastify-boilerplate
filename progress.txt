@@ -1,0 +1,100 @@
+Step 1: Checked initial progress log (file was empty).
+Step 2: Created high-level plan outlining research, setup, implementation, and tooling tasks.
+Step 3: Researched existing GitHub projects (erdemkosk/fastify-awilix-boilerplate for DI structure, riipandi/fuelstack for Fastify + Drizzle integration) to extract best practices.
+Step 4: Drafted architecture plan (TypeScript Fastify server, tsyringe DI container, Drizzle PostgreSQL layer, modular post module, env validation via zod, swagger + swagger-ui plugins, jest + biome configs).
+Step 5: Initialized npm project (npm init -y) to create base package.json.
+Step 6: Installed runtime deps (fastify, drizzle-orm, pg, tsyringe, zod, pino, swagger plugins, dotenv) and dev tooling (TypeScript, tsx, drizzle-kit, jest + ts-jest, @biomejs/biome).
+Step 7: Added tsconfig.json configured for NodeNext modules, strict TypeScript, and src/tests directories.
+Step 8: Updated package.json with project metadata, NodeNext module type, and scripts for dev/build/test/lint/drizzle.
+Step 9: Created src directory structure (config, container, db, plugins, modules/posts).
+Step 10: Implemented env config (src/config/env.ts) using dotenv + zod for typed environment parsing.
+Step 11: Added logger configuration (src/config/logger.ts) wiring pino with env-driven log level.
+Step 12: Defined DI token constants (src/container/tokens.ts) for logger, db, and pool references.
+Step 13: Enabled experimental decorators and metadata emission in tsconfig for tsyringe injection.
+Step 14: Installed reflect-metadata required for tsyringe decorators.
+Step 15: Created Drizzle schema (src/db/schema.ts) defining posts table with timestamps.
+Step 16: Wired DI container (src/container/index.ts) to register logger, PG pool, and Drizzle instance via tsyringe.
+Step 17: Added drizzle.config.ts with postgres dialect, schema path, and env-driven credentials.
+Step 18: Configured Biome (biome.json) with recommended lint/format rules.
+Step 19: Added jest.config.ts using ts-jest preset and node test environment with coverage output.
+Step 17a: Extended DI tokens to include post repository/service identifiers.
+Step 18: Added Fastify DI plugin (src/plugins/di.ts) exposing tsyringe container on app instance.
+Step 19: Implemented PostRepository (src/modules/posts/post.repository.ts) for CRUD operations via Drizzle.
+Step 20: Built PostService (src/modules/posts/post.service.ts) encapsulating business logic with logging hooks.
+Step 21: Authored Zod schemas for post params/body validation (src/modules/posts/post.schemas.ts).
+Step 21a: Attempted to install zod-to-json-schema for swagger integration but npm reported peer dependency conflict with zod@4.
+Step 22: Defined post routes (src/modules/posts/post.routes.ts) with Zod validation and JSON schemas for swagger.
+Step 23: Registered post module (src/modules/posts/index.ts) to bind repository/service singletons before wiring routes.
+Step 24: Implemented app builder (src/app.ts) registering DI plugin, swagger, health route, and post module.
+Step 25: Added server bootstrap (src/server.ts) with graceful shutdown hooks.
+Step 26: Created tests directory for Jest suites.
+Step 27: Added PostService unit tests (tests/post.service.test.ts) verifying repository delegation and logging.
+Step 28: Updated tsconfig to include node and jest type definitions for testing.
+Step 29: Created .env.example with default Fastify port, Postgres connection string, and log level.
+Step 30: Completed core server implementation encompassing DI, CRUD routes, and swagger setup.
+Step 31: Replaced Jest TS config with CommonJS jest.config.cjs to avoid ts-node dependency.
+Step 32: Updated PostService tests to align with nullable content type expectations.
+Step 33: Enabled isolatedModules in tsconfig to satisfy ts-jest requirements.
+Step 34: Updated Jest config for ESM (ts-jest default-esm preset, ESM globals, moduleNameMapper).
+Step 35: Switched TypeScript module configuration to CommonJS/Node resolution for simpler Jest execution.
+Step 36: Removed ESM module type from package.json to align with CommonJS build output.
+Step 37: Simplified Jest config back to ts-jest preset after shifting project to CommonJS.
+Step 38: Imported reflect-metadata in PostService tests to satisfy tsyringe runtime requirements.
+Step 39: Ran npm test successfully (Jest suite passing).
+Step 40: Adjusted Biome config to allow parameter decorators via unsafeParameterDecoratorsEnabled.
+Step 41: Updated drizzle.config.ts to validate DATABASE_URL instead of using non-null assertion.
+Step 42: Tweaked Post module imports to use import type for Biome compliance.
+Step 43: Ran Biome lint successfully with no issues.
+Step 44: Updated tsconfig include to focus on src files for build output.
+Step 45: Installed @types/pg so TypeScript recognizes pg module declarations.
+Step 46: Verified TypeScript build (npm run build) completes successfully.
+Step 47: Authored README.md documenting features, setup steps, scripts, and module structure referencing research findings.
+Step 48: Finalized tooling/documentation tasks and marked plan as complete.
+Step 49: Attempted git status for summary, but repository is not initialized (no .git directory).
+Step 50: Updated Fastify app instantiation to supply loggerInstance instead of logger config to satisfy Fastify v5 requirements.
+Step 51: Removed stray compiled Jest artifact (tests/post.service.test.js) after confirming tests pass.
+Step 52: Added explicit Fastify instance type alias (AppInstance) and reused it in server.ts to resolve type mismatch with custom pino logger.
+Step 53: Introduced src/app.types.ts to centralize AppInstance typing and updated app, server, and post module signatures to consume the shared alias.
+Step 54: Re-ran build and test suites to confirm type adjustments leave toolchain green.
+Step 55: Initiated refactor request analysis focusing on scalable DI and route organization.
+Step 56: Researched controller-based Fastify patterns (e.g., L2jLiga/fastify-decorators) for Nest-like DI design.
+Step 57: Trimmed DI tokens to infrastructure-only identifiers to avoid growth per feature module.
+Step 58: Updated PostService to rely on class-based injection for repository while retaining logger injection token.
+Step 59: Created src/docs/posts.docs.ts to centralize Swagger/OpenAPI schemas for the posts module.
+Step 60: Introduced PostController class to encapsulate route handlers and bind Swagger docs during registration.
+Step 61: Simplified post.routes.ts to delegate registration to the controller for a lean route layer.
+Step 62: Updated posts module registration to use class-based singletons and resolve the new controller.
+Step 63: Updated Biome config to ignore dist output to avoid lint noise from compiled artifacts.
+Step 64: Added .biomeignore to exclude dist output after removing unsupported config-based ignore.
+Step 65: Ran Biome lint after controller restructure (suppressed intentional runtime import).
+Step 66: Executed Jest suite to verify service/controller refactor passes existing tests.
+Step 67: Rebuilt TypeScript output post-refactor to confirm compilation.
+Step 68: Refreshed README to describe controller-based modules and dedicated Swagger docs directory.
+Step 69: Configured Biome experimentalScannerIgnores to skip dist directory during linting.
+Step 70: Scoped npm lint/format scripts to src/tests/README to avoid compiled output interference.
+Step 71: Confirmed updated lint scope passes after adjusting scripts (biome lint src tests README.md).
+Step 72: Re-ran Jest suite post-script changes to ensure regressions are caught.
+Step 73: Split controller and routing concerns so routes orchestrate schema binding while controller exposes handlers only.
+Step 74: Reviewing module registration strategy to avoid per-module index scaffolding.
+Step 75: Installed fast-glob to enable dynamic module discovery.
+Step 76: Introduced module registry (src/modules/module-registry.ts) to dynamically discover route files via fast-glob.
+Step 77: Embedded posts module registration inside post.routes.ts using the shared module registry; removed per-module index file.
+Step 78: Updated app builder to initialize modules through registerModules(app) after loading swagger and DI plugins.
+Step 79: Validated linting, tests, and TypeScript build after dynamic module loader changes.
+Step 80: Updated README to describe automatic module discovery and revised structure.
+Step 81: Investigating shared module registration helper patterns.
+Step 82: GitHub searches yielded no direct shared registrar helpers; opting to craft reusable helper inspired by Nest-like module patterns.
+Step 83: Added defineModule helper to standardize per-module registration and refactored posts routes to use it, then validated lint/tests.
+Step 84: Replaced tsyringe ClassConstructor import with local constructor type alias and revalidated lint/tests.
+Step 85: Relaxed constructor typing with justified suppression to accommodate DI parameters; lint/tests green.
+Step 86: Integrated awilix + @fastify/awilix (installed deps, removed tsyringe/fast-glob) to align DI with marcoturi/fastify-boilerplate approach.
+Step 87: Replaced tsyringe container with awilix setup (setupDI, request scopes, pool/db registration) and updated server bootstrap.
+Step 88: Refactored posts module to awilix registrations, simplified routes to resolve controllers per request, and removed custom module registry helpers.
+Step 89: Updated README to document awilix-based DI structure and refreshed project layout.
+Step 90: Added auto-registration helper to scan modules for controllers/services/repositories and register them with awilix.
+Step 91: Simplified post routes to rely on request-scoped resolution after auto-registration; verified lint/test/build.
+Step 92: Planning enhancements (auto-registration safeguards, controller helper, DI test, docs update).
+Step 93: Hardened auto-registration (conflict detection, class checks, injectable helper) and added DI auto-registration tests with documentation updates.
+Step 94: Added Stories module (schema, repository, service, controller, routes, docs) and registered in module index.
+Step 95: Updated services/controllers for awilix proxy injection, added controller helper, stories module with full stack, and refreshed tests/build.
+Step 96: Set awilix injection mode to CLASSIC with constructor-based dependencies, simplifying controllers/services; reran lint/test/build.

@@ -1,0 +1,25 @@
+{
+    "$schema":  "https://biomejs.dev/schemas/latest/schema.json",
+    "formatter":  {
+                      "enabled":  true
+                  },
+    "linter":  {
+                   "enabled":  true,
+                   "rules":  {
+                                 "recommended":  true
+                             }
+               },
+    "javascript":  {
+                       "parser":  {
+                                      "unsafeParameterDecoratorsEnabled":  true
+                                  }
+                   },
+    "files":  {
+                  "experimentalScannerIgnores":  [
+                                                     "dist"
+                                                 ],
+                  "maxSize":  null,
+                  "includes":  null,
+                  "ignoreUnknown":  null
+              }
+}
