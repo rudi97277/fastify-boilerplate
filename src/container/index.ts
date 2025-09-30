@@ -20,7 +20,7 @@ export const setupDI = async (app: AppInstance): Promise<void> => {
     db: asValue(db),
   });
 
-  await autoRegisterComponents();
+  await autoRegisterComponents(diContainer);
 
   await app.register(fastifyAwilixPlugin, {
     container: diContainer,

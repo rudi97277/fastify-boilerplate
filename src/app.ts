@@ -1,12 +1,14 @@
-import Fastify from "fastify";
+import cors from "@fastify/cors";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+import Fastify from "fastify";
 
+import fastifyAutoload from "@fastify/autoload";
+import path from "node:path";
 import type { AppInstance } from "./app.types";
 import { env } from "./config/env";
 import { logger } from "./config/logger";
 import { setupDI } from "./container";
-import { registerModules } from "./modules";
 
 export async function buildApp(): Promise<AppInstance> {
   const app = Fastify({
@@ -22,11 +24,16 @@ export async function buildApp(): Promise<AppInstance> {
       },
       servers: [
         {
-          url: `http://localhost:${env.PORT}`,
+          url: `http://localhost:${env.PORT}/api/v1`,
           description: "Local development",
         },
       ],
     },
+  });
+
+  await app.register(cors, {
+    origin: ["*"],
+    credentials: true,
   });
 
   await app.register(swaggerUi, {
@@ -36,10 +43,20 @@ export async function buildApp(): Promise<AppInstance> {
     },
   });
 
-  app.get("/health", async () => ({ status: "ok" }));
+  await app.register(
+    async (scoped) => {
+      await scoped.register(fastifyAutoload, {
+        dir: path.join(__dirname, "modules"),
+        dirNameRoutePrefix: true,
+        indexPattern: /.*\.route\.(ts|js)$/,
+      });
+    },
+    { prefix: "/api/v1" }
+  );
 
   await setupDI(app);
-  await registerModules(app);
+
+  app.get("/health", async () => ({ status: "ok" }));
 
   return app;
 }
