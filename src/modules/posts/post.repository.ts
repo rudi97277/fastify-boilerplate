@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 
-import type { Database } from "../../container";
-import { posts, type NewPost, type Post } from "../../db/schema";
+import { Database } from "@/container";
+import { NewPost, Post, posts } from "@/db/schema";
 
 export class PostRepository {
   constructor(private readonly db: Database) {}
@@ -20,7 +20,10 @@ export class PostRepository {
     return created;
   }
 
-  async update(id: number, payload: Partial<NewPost>): Promise<Post | undefined> {
+  async update(
+    id: number,
+    payload: Partial<NewPost>
+  ): Promise<Post | undefined> {
     const [updated] = await this.db
       .update(posts)
       .set({ ...payload, updatedAt: new Date() })

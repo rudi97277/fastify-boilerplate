@@ -1,3 +1,4 @@
+import { successEntity } from "@/docs/common.docs";
 import type { FastifySchema } from "fastify";
 
 const postEntity = {
@@ -46,10 +47,7 @@ export const postDocs: Record<string, FastifySchema> = {
     tags: ["posts"],
     summary: "List posts",
     response: {
-      200: {
-        type: "array",
-        items: postEntity,
-      },
+      200: successEntity(postEntity, true),
     },
   },
   getById: {

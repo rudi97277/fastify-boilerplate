@@ -1,12 +1,12 @@
-import type { AppInstance } from "../../app.types";
-import { postDocs } from "../../docs/posts.docs";
-import { from, handler } from "../controller-handler";
-import { PostController } from "./post.controller";
-import type {
+import { AppInstance } from "@/app.types";
+import { postDocs } from "@/docs/posts.docs";
+import { from, handler } from "@/modules/controller-handler";
+import { PostController } from "@/modules/posts/post.controller";
+import {
   CreatePostInput,
   PostIdParams,
   UpdatePostInput,
-} from "./post.schemas";
+} from "@/modules/posts/post.schemas";
 
 const ctrl = from(PostController);
 

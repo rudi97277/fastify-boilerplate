@@ -1,18 +1,12 @@
-import type { AppInstance } from "../../app.types";
-import { storyDocs } from "../../docs/story.docs";
-import { from } from "../controller-handler";
-import type {
+import { AppInstance } from "@/app.types";
+import { storyDocs } from "@/docs/story.docs";
+import { from } from "@/modules/controller-handler";
+import {
   CreateStoryInput,
   StoryIdParams,
   UpdateStoryInput,
-} from "./stories.schemas";
-import { StoryController } from "./story.controller";
-
-declare module "fastify" {
-  interface FastifyRequest {
-    storyController: StoryController;
-  }
-}
+} from "@/modules/stories/stories.schemas";
+import { StoryController } from "@/modules/stories/story.controller";
 
 const ctrl = from(StoryController);
 

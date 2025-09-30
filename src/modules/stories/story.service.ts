@@ -1,13 +1,11 @@
+import { NewStory, Story } from "@/db/schema";
+import { StoryRepository } from "@/modules/stories/story.repository";
 import type { Logger } from "pino";
-
-import type { NewStory, Story } from "../../db/schema";
-// biome-ignore lint/style/useImportType: runtime awilix instantiation
-import { StoryRepository } from "./story.repository";
 
 export class StoryService {
   constructor(
     private readonly storyRepository: StoryRepository,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {}
 
   async list(): Promise<Story[]> {
@@ -24,7 +22,10 @@ export class StoryService {
     return created;
   }
 
-  async update(id: number, payload: Partial<NewStory>): Promise<Story | undefined> {
+  async update(
+    id: number,
+    payload: Partial<NewStory>
+  ): Promise<Story | undefined> {
     const updated = await this.storyRepository.update(id, payload);
     if (updated) {
       this.logger.info({ storyId: id }, "story updated");

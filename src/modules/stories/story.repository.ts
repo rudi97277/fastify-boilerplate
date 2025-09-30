@@ -1,7 +1,6 @@
+import { Database } from "@/container";
+import { NewStory, stories, Story } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
-
-import type { Database } from "../../container";
-import { stories, type NewStory, type Story } from "../../db/schema";
 
 export class StoryRepository {
   constructor(private readonly db: Database) {}
@@ -11,7 +10,10 @@ export class StoryRepository {
   }
 
   async findById(id: number): Promise<Story | undefined> {
-    const [result] = await this.db.select().from(stories).where(eq(stories.id, id));
+    const [result] = await this.db
+      .select()
+      .from(stories)
+      .where(eq(stories.id, id));
     return result;
   }
 
@@ -20,7 +22,10 @@ export class StoryRepository {
     return created;
   }
 
-  async update(id: number, payload: Partial<NewStory>): Promise<Story | undefined> {
+  async update(
+    id: number,
+    payload: Partial<NewStory>
+  ): Promise<Story | undefined> {
     const [updated] = await this.db
       .update(stories)
       .set({ ...payload, updatedAt: new Date() })

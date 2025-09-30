@@ -1,8 +1,13 @@
+import {
+  CreateStoryInput,
+  createStorySchema,
+  StoryIdParams,
+  storyIdParamSchema,
+  UpdateStoryInput,
+  updateStorySchema,
+} from "@/modules/stories/stories.schemas";
+import { StoryService } from "@/modules/stories/story.service";
 import type { FastifyReply, FastifyRequest } from "fastify";
-
-import { createStorySchema, storyIdParamSchema, updateStorySchema, type CreateStoryInput, type StoryIdParams, type UpdateStoryInput } from "./stories.schemas";
-// biome-ignore lint/style/useImportType: runtime awilix instantiation
-import { StoryService } from "./story.service";
 
 export class StoryController {
   constructor(private readonly storyService: StoryService) {}
@@ -11,7 +16,10 @@ export class StoryController {
     return this.storyService.list();
   };
 
-  getById = async (request: FastifyRequest<{ Params: StoryIdParams }>, reply: FastifyReply) => {
+  getById = async (
+    request: FastifyRequest<{ Params: StoryIdParams }>,
+    reply: FastifyReply
+  ) => {
     const { id } = storyIdParamSchema.parse(request.params);
     const story = await this.storyService.getById(id);
 
@@ -22,7 +30,10 @@ export class StoryController {
     return story;
   };
 
-  create = async (request: FastifyRequest<{ Body: CreateStoryInput }>, reply: FastifyReply) => {
+  create = async (
+    request: FastifyRequest<{ Body: CreateStoryInput }>,
+    reply: FastifyReply
+  ) => {
     const body = createStorySchema.parse(request.body);
     const created = await this.storyService.create(body);
     return reply.code(201).send(created);
@@ -30,7 +41,7 @@ export class StoryController {
 
   update = async (
     request: FastifyRequest<{ Params: StoryIdParams; Body: UpdateStoryInput }>,
-    reply: FastifyReply,
+    reply: FastifyReply
   ) => {
     const { id } = storyIdParamSchema.parse(request.params);
     const body = updateStorySchema.parse(request.body);
@@ -43,7 +54,10 @@ export class StoryController {
     return updated;
   };
 
-  remove = async (request: FastifyRequest<{ Params: StoryIdParams }>, reply: FastifyReply) => {
+  remove = async (
+    request: FastifyRequest<{ Params: StoryIdParams }>,
+    reply: FastifyReply
+  ) => {
     const { id } = storyIdParamSchema.parse(request.params);
     const deleted = await this.storyService.delete(id);
 

@@ -31,7 +31,6 @@ export function handler<T extends object>(
     const c = req.diScope.resolve(token) as T;
     const fn = c[method] as unknown as (...args: any[]) => any;
 
-    // works for 0-arg (extras ignored) and 2-arg handlers
     return fn.call(c, req, reply);
   };
 }

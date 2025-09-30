@@ -7,14 +7,16 @@ import {
   type CreatePostInput,
   type PostIdParams,
   type UpdatePostInput,
-} from "./post.schemas";
-import { PostService } from "./post.service";
+} from "@/modules/posts/post.schemas";
+import { PostService } from "@/modules/posts/post.service";
+import { error, success } from "@/utils/response.util";
 
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  list = async () => {
-    return this.postService.list();
+  list = async (_request: FastifyRequest, reply: FastifyReply) => {
+    const posts = await this.postService.list();
+    return success(reply, posts);
   };
 
   getById = async (
@@ -25,10 +27,10 @@ export class PostController {
     const post = await this.postService.getById(id);
 
     if (!post) {
-      return reply.code(404).send({ message: "Post not found" });
+      return error(reply, "Post not found", 404);
     }
 
-    return post;
+    return success(reply, post);
   };
 
   create = async (

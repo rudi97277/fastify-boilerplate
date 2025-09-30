@@ -1,13 +1,11 @@
+import { NewPost, Post } from "@/db/schema";
+import { PostRepository } from "@/modules/posts/post.repository";
 import type { Logger } from "pino";
-
-import type { NewPost, Post } from "../../db/schema";
-// biome-ignore lint/style/useImportType: runtime awilix instantiation
-import { PostRepository } from "./post.repository";
 
 export class PostService {
   constructor(
     private readonly postRepository: PostRepository,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {}
 
   async list(): Promise<Post[]> {
@@ -24,7 +22,10 @@ export class PostService {
     return created;
   }
 
-  async update(id: number, payload: Partial<NewPost>): Promise<Post | undefined> {
+  async update(
+    id: number,
+    payload: Partial<NewPost>
+  ): Promise<Post | undefined> {
     const updated = await this.postRepository.update(id, payload);
     if (updated) {
       this.logger.info({ postId: id }, "post updated");
