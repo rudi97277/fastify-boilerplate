@@ -13,7 +13,7 @@ const patterns = [
   "**/*.repository.{ts,js}",
 ];
 
-const lcFirst = (s: string) => (s ? s[0].toLowerCase() + s.slice(1) : s);
+export const lcFirst = (s: string) => (s ? s[0].toLowerCase() + s.slice(1) : s);
 
 const toRegistrationName = (exportName: string, ctorName?: string): string => {
   const base = exportName === "default" && ctorName ? ctorName : exportName;

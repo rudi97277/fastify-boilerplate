@@ -6,7 +6,7 @@ export const postIdParamSchema = z.object({
 
 export const createPostSchema = z.object({
   title: z.string().min(1).max(256),
-  content: z.string().min(1).optional(),
+  content: z.string().min(1),
 });
 
 export const updatePostSchema = createPostSchema.partial();

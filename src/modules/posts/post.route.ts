@@ -1,39 +1,38 @@
 import { AppInstance } from "@/app.types";
 import { postDocs } from "@/docs/posts.docs";
-import { from, handler } from "@/modules/controller-handler";
+import { from } from "@/modules/controller-handler";
 import { PostController } from "@/modules/posts/post.controller";
-import {
-  CreatePostInput,
-  PostIdParams,
-  UpdatePostInput,
-} from "@/modules/posts/post.schemas";
 
 const ctrl = from(PostController);
 
 export default async (app: AppInstance): Promise<void> => {
-  app.get("", { schema: postDocs.list }, handler(PostController, "list"));
+  app.get(
+    "",
+    { schema: postDocs.list },
+    ctrl((c) => c.list)
+  );
 
-  app.post<{ Body: CreatePostInput }>(
+  app.post(
     "",
     { schema: postDocs.create },
-    ctrl("create")
+    ctrl((c) => c.create)
   );
 
-  app.get<{ Params: PostIdParams }>(
+  app.get(
     "/:id",
     { schema: postDocs.getById },
-    handler(PostController, "getById")
+    ctrl((c) => c.getById)
   );
 
-  app.put<{ Params: PostIdParams; Body: UpdatePostInput }>(
+  app.put(
     "/:id",
     { schema: postDocs.update },
-    ctrl("update")
+    ctrl((c) => c.update)
   );
 
-  app.delete<{ Params: PostIdParams }>(
+  app.delete(
     "/:id",
     { schema: postDocs.remove },
-    ctrl("remove")
+    ctrl((c) => c.remove)
   );
 };

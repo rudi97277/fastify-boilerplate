@@ -3,8 +3,8 @@ import { asValue } from "awilix";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
+import { env } from "@/config/env";
 import type { AppInstance } from "../app.types";
-import { env } from "../config/env";
 import * as schema from "../db/schema";
 import { autoRegisterComponents } from "./auto-register";
 

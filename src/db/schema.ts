@@ -1,11 +1,13 @@
-import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 256 }).notNull(),
-  content: text("content"),
-  createdAt: timestamp("created_at", { withTimezone: false }).defaultNow().notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: false })
+    .defaultNow()
+    .notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: false })
     .defaultNow()
     .notNull()
@@ -19,7 +21,9 @@ export const stories = pgTable("stories", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 256 }).notNull(),
   body: text("body").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: false }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: false })
+    .defaultNow()
+    .notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: false })
     .defaultNow()
     .notNull()

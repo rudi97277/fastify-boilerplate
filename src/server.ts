@@ -17,8 +17,6 @@ const start = async () => {
 
   await app.ready();
 
-  console.log(app.printRoutes({ commonPrefix: false }));
-
   process.on("SIGINT", async () => {
     app?.log.info("Received SIGINT, shutting down");
     await shutdown();

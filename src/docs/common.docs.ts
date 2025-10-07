@@ -1,4 +1,10 @@
-export const successEntity = (data: unknown, isArray?: boolean) => {
+import { FastifySchema } from "fastify";
+
+interface WrapperOption {
+  isArray?: boolean;
+}
+
+export const wrapper = (data: unknown, option?: WrapperOption) => {
   return {
     type: "object",
     required: ["success", "message", "data"],
@@ -6,7 +12,7 @@ export const successEntity = (data: unknown, isArray?: boolean) => {
     properties: {
       success: { type: "boolean" },
       message: { type: "string" },
-      data: isArray
+      data: option?.isArray
         ? {
             type: "array",
             items: data,
@@ -15,3 +21,5 @@ export const successEntity = (data: unknown, isArray?: boolean) => {
     },
   } as const;
 };
+
+export type DocsOf<T> = Record<keyof T, FastifySchema>;

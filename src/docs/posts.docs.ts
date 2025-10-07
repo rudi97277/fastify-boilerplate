@@ -1,5 +1,11 @@
-import { successEntity } from "@/docs/common.docs";
-import type { FastifySchema } from "fastify";
+import { DocsOf, wrapper } from "@/docs/common.docs";
+import { PostController } from "@/modules/posts/post.controller";
+import {
+  createPostSchema,
+  postIdParamSchema,
+  updatePostSchema,
+} from "@/modules/posts/post.validation";
+import { toJSONSchema } from "@/utils/docs.util";
 
 const postEntity = {
   type: "object",
@@ -14,46 +20,18 @@ const postEntity = {
   },
 } as const;
 
-const idParam = {
-  type: "object",
-  required: ["id"],
-  additionalProperties: false,
-  properties: {
-    id: { type: "number" },
-  },
-} as const;
-
-const postBody = {
-  type: "object",
-  required: ["title"],
-  additionalProperties: false,
-  properties: {
-    title: { type: "string", minLength: 1, maxLength: 256 },
-    content: { type: "string" },
-  },
-} as const;
-
-const postUpdateBody = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    title: { type: "string", minLength: 1, maxLength: 256 },
-    content: { type: "string" },
-  },
-} as const;
-
-export const postDocs: Record<string, FastifySchema> = {
+export const postDocs: DocsOf<PostController> = {
   list: {
     tags: ["posts"],
     summary: "List posts",
     response: {
-      200: successEntity(postEntity, true),
+      200: wrapper(postEntity, { isArray: true }),
     },
   },
   getById: {
     tags: ["posts"],
     summary: "Get post by id",
-    params: idParam,
+    params: toJSONSchema(postIdParamSchema),
     response: {
       200: postEntity,
       404: {
@@ -65,7 +43,7 @@ export const postDocs: Record<string, FastifySchema> = {
   create: {
     tags: ["posts"],
     summary: "Create post",
-    body: postBody,
+    body: toJSONSchema(createPostSchema),
     response: {
       201: postEntity,
     },
@@ -73,8 +51,8 @@ export const postDocs: Record<string, FastifySchema> = {
   update: {
     tags: ["posts"],
     summary: "Update post",
-    params: idParam,
-    body: postUpdateBody,
+    params: toJSONSchema(postIdParamSchema),
+    body: toJSONSchema(updatePostSchema),
     response: {
       200: postEntity,
       404: {
@@ -86,7 +64,7 @@ export const postDocs: Record<string, FastifySchema> = {
   remove: {
     tags: ["posts"],
     summary: "Delete post",
-    params: idParam,
+    params: toJSONSchema(postIdParamSchema),
     response: {
       204: {
         type: "null",
@@ -98,4 +76,4 @@ export const postDocs: Record<string, FastifySchema> = {
       },
     },
   },
-};
+} as const;

@@ -3,16 +3,38 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import Fastify from "fastify";
 
+import { replyDecorator } from "@/plugins/reply-decorator";
+import { HttpStatus } from "@/utils/response.util";
 import fastifyAutoload from "@fastify/autoload";
 import path from "node:path";
 import type { AppInstance } from "./app.types";
 import { env } from "./config/env";
 import { logger } from "./config/logger";
 import { setupDI } from "./container";
+import { ApiError } from "./errors/api-error";
 
 export async function buildApp(): Promise<AppInstance> {
   const app = Fastify({
     loggerInstance: logger,
+    ajv: {
+      customOptions: {
+        allErrors: true,
+      },
+    },
+  });
+
+  await app.register(replyDecorator);
+
+  app.setErrorHandler((err, _req, reply) => {
+    if (err instanceof ApiError) {
+      return err.send(reply);
+    }
+
+    reply.fail(
+      err.message || "Internal Server Error",
+      err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      err.validation
+    );
   });
 
   await app.register(swagger, {
