@@ -7,7 +7,7 @@ export class PostRepository {
   constructor(private readonly db: Database) {}
 
   async findAll(): Promise<Post[]> {
-    return this.db.select().from(posts).orderBy(desc(posts.createdAt));
+    return this.db.select().from(posts).orderBy(desc(posts.created_at));
   }
 
   async findById(id: number): Promise<Post | undefined> {
@@ -26,7 +26,7 @@ export class PostRepository {
   ): Promise<Post | undefined> {
     const [updated] = await this.db
       .update(posts)
-      .set({ ...payload, updatedAt: new Date() })
+      .set({ ...payload, updated_at: new Date() })
       .where(eq(posts.id, id))
       .returning();
 

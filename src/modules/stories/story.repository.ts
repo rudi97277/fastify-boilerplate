@@ -6,7 +6,7 @@ export class StoryRepository {
   constructor(private readonly db: Database) {}
 
   async findAll(): Promise<Story[]> {
-    return this.db.select().from(stories).orderBy(desc(stories.createdAt));
+    return this.db.select().from(stories).orderBy(desc(stories.created_at));
   }
 
   async findById(id: number): Promise<Story | undefined> {
@@ -28,7 +28,7 @@ export class StoryRepository {
   ): Promise<Story | undefined> {
     const [updated] = await this.db
       .update(stories)
-      .set({ ...payload, updatedAt: new Date() })
+      .set({ ...payload, created_at: new Date() })
       .where(eq(stories.id, id))
       .returning();
 

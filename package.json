@@ -6,7 +6,8 @@
     "start": "node dist/server.js",
     "db:generate": "drizzle-kit generate --config drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
-    "build": "tsc -p tsconfig.json",
+    "db:push": "drizzle-kit push",
+    "build": "tsup",
     "lint": "biome lint src tests README.md",
     "format": "biome format src tests README.md",
     "test": "jest",
@@ -23,12 +24,14 @@
     "@fastify/cors": "^11.1.0",
     "@fastify/swagger": "^9.5.2",
     "@fastify/swagger-ui": "^5.2.3",
+    "@swc/core": "^1.13.5",
     "awilix": "^12.0.5",
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "fast-glob": "^3.3.3",
     "fastify": "^5.6.1",
     "fastify-plugin": "^5.0.1",
+    "fastify-type-provider-zod": "^6.0.0",
     "pg": "^8.16.3",
     "pino": "^9.11.0",
     "zod": "^4.1.11"
@@ -41,6 +44,8 @@
     "drizzle-kit": "^0.31.5",
     "jest": "^30.1.3",
     "ts-jest": "^29.4.4",
+    "tsc-alias": "^1.8.16",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   }

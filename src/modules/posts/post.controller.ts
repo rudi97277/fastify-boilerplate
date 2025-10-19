@@ -1,12 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { message } from "@/constants/message.constant";
 import { PostService } from "@/modules/posts/post.service";
 import {
-  createPostSchema,
-  postIdParamSchema,
-  updatePostSchema,
-  type PostIdParams,
-  type UpdatePostInput,
+  CreatePostBody,
+  PostIdParam,
+  UpdatePostBody,
 } from "@/modules/posts/post.validation";
 import { HttpStatus } from "@/utils/response.util";
 
@@ -19,45 +18,51 @@ export class PostController {
   };
 
   getById = async (
-    request: FastifyRequest<{ Params: PostIdParams }>,
+    request: FastifyRequest<{ Params: PostIdParam }>,
     reply: FastifyReply
   ) => {
-    const { id } = postIdParamSchema.parse(request.params);
+    const { id } = request.params;
     const post = await this.postService.getById(id);
 
-    reply.success(post, HttpStatus.CREATED);
+    reply.success(post);
   };
 
-  create = async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = createPostSchema.parse(request.body);
+  create = async (
+    request: FastifyRequest<{ Body: CreatePostBody }>,
+    reply: FastifyReply
+  ) => {
+    const body = request.body;
     const created = await this.postService.create(body);
     reply.success(created, HttpStatus.CREATED);
   };
 
   update = async (
-    request: FastifyRequest<{ Params: PostIdParams; Body: UpdatePostInput }>,
+    request: FastifyRequest<{
+      Params: PostIdParam;
+      Body: UpdatePostBody;
+    }>,
     reply: FastifyReply
   ) => {
-    const { id } = postIdParamSchema.parse(request.params);
-    const body = updatePostSchema.parse(request.body);
+    const { id } = request.params;
+    const body = request.body;
     const updated = await this.postService.update(id, body);
 
     if (!updated) {
-      return reply.fail("Post not found", HttpStatus.NOT_FOUND);
+      return reply.fail(message.COMMON.NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     reply.success(updated);
   };
 
   remove = async (
-    request: FastifyRequest<{ Params: PostIdParams }>,
+    request: FastifyRequest<{ Params: PostIdParam }>,
     reply: FastifyReply
   ) => {
-    const { id } = postIdParamSchema.parse(request.params);
+    const { id } = request.params;
     const deleted = await this.postService.delete(id);
 
     if (!deleted) {
-      return reply.fail("Post not found", HttpStatus.OK);
+      return reply.fail(message.COMMON.NOT_FOUND, HttpStatus.OK);
     }
 
     reply.success();

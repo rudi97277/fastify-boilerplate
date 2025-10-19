@@ -3,11 +3,17 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import Fastify from "fastify";
 
+import { AppInstance } from "@/app.types";
 import { replyDecorator } from "@/plugins/reply-decorator";
 import { HttpStatus } from "@/utils/response.util";
 import fastifyAutoload from "@fastify/autoload";
+import {
+  jsonSchemaTransform,
+  serializerCompiler,
+  validatorCompiler,
+} from "fastify-type-provider-zod";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
-import type { AppInstance } from "./app.types";
 import { env } from "./config/env";
 import { logger } from "./config/logger";
 import { setupDI } from "./container";
@@ -21,8 +27,12 @@ export async function buildApp(): Promise<AppInstance> {
         allErrors: true,
       },
     },
+    genReqId: (req) =>
+      (req.headers["x-request-id"] as string | undefined) ?? randomUUID(),
   });
 
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);
   await app.register(replyDecorator);
 
   app.setErrorHandler((err, _req, reply) => {
@@ -32,8 +42,8 @@ export async function buildApp(): Promise<AppInstance> {
 
     reply.fail(
       err.message || "Internal Server Error",
-      err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
-      err.validation
+      (err.statusCode as HttpStatus) || HttpStatus.INTERNAL_SERVER_ERROR,
+      err.validation,
     );
   });
 
@@ -51,6 +61,7 @@ export async function buildApp(): Promise<AppInstance> {
         },
       ],
     },
+    transform: jsonSchemaTransform,
   });
 
   await app.register(cors, {
@@ -73,7 +84,7 @@ export async function buildApp(): Promise<AppInstance> {
         indexPattern: /.*\.route\.(ts|js)$/,
       });
     },
-    { prefix: "/api/v1" }
+    { prefix: "/api/v1" },
   );
 
   await setupDI(app);

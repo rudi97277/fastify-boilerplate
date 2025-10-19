@@ -4,14 +4,7 @@ import type { AwilixContainer } from "awilix";
 import { asClass, InjectionMode, Lifetime } from "awilix";
 import fg from "fast-glob";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import { rememberToken } from "./di-registry";
-
-const patterns = [
-  "**/*.controller.{ts,js}",
-  "**/*.service.{ts,js}",
-  "**/*.repository.{ts,js}",
-];
 
 export const lcFirst = (s: string) => (s ? s[0].toLowerCase() + s.slice(1) : s);
 
@@ -30,62 +23,73 @@ const isClass = (
   return (
     src.startsWith("class ") ||
     ("prototype" in value &&
+      // @ts-ignore runtime check
       value.prototype &&
       Object.prototype.hasOwnProperty.call(value.prototype, "constructor"))
   );
 };
 
+// Decide which extensions to scan at runtime (.ts in dev, .js after build)
+const extGroup = path.extname(__filename) === ".ts" ? "{ts,js}" : "js";
+
+const patterns = [
+  `**/*.controller.${extGroup}`,
+  `**/*.service.${extGroup}`,
+  `**/*.repository.${extGroup}`,
+];
+
 export const autoRegisterComponents = async (
   container: AwilixContainer = diContainer
-): Promise<void> => {
+) => {
+  // already done for this container? bail
   if (registeredContainers.has(container)) return;
 
   const modulesDir = path.resolve(__dirname, "../modules");
-  const entries = await fg(patterns, {
-    cwd: modulesDir,
-    absolute: true,
-    ignore: ["**/*.d.ts"],
-  });
-
   const registeredNames = new Set(
     container.registrations ? Object.keys(container.registrations) : []
   );
 
-  await Promise.all(
-    entries.map(async (entry) => {
-      const moduleExports = await import(pathToFileURL(entry).href);
+  // 1) Find files — and WAIT
+  const entries = await fg(patterns, {
+    cwd: modulesDir,
+    absolute: true,
+    ignore: ["**/*.d.ts", "**/*.map"],
+  });
 
-      for (const [exportName, exportedValue] of Object.entries(moduleExports)) {
-        if (!isClass(exportedValue)) continue;
+  // 2) Register every class export — and WAIT
+  for (const entry of entries) {
+    // If your build outputs ESM, swap to: const moduleExports = await import(pathToFileURL(entry).href)
+    // For CJS output, require() is fine:
+    const moduleExports = require(entry);
 
-        const ctor = exportedValue as new (...args: any[]) => unknown;
-        const regName = toRegistrationName(exportName, ctor.name);
+    for (const [exportName, exportedValue] of Object.entries(moduleExports)) {
+      if (!isClass(exportedValue)) continue;
 
-        if (!regName) {
-          throw new Error(
-            `Cannot infer DI name for export "${exportName}" in ${entry}`
-          );
-        }
-        if (registeredNames.has(regName)) {
-          throw new Error(
-            `Duplicate DI registration name "${regName}" from ${entry}`
-          );
-        }
-
-        container.register(
-          regName,
-          asClass(ctor, {
-            lifetime: Lifetime.SINGLETON,
-            injectionMode: InjectionMode.CLASSIC,
-          })
+      const ctor = exportedValue as new (...args: any[]) => unknown;
+      const regName = toRegistrationName(exportName, ctor.name);
+      if (!regName) {
+        throw new Error(
+          `Cannot infer DI name for export "${exportName}" in ${entry}`
         );
-
-        rememberToken(ctor, regName);
-
-        registeredNames.add(regName);
       }
-    })
-  );
+      if (registeredNames.has(regName)) {
+        // skip duplicates (hot reload / multi-exports)
+        continue;
+      }
 
+      container.register(
+        regName,
+        asClass(ctor, {
+          lifetime: Lifetime.SINGLETON,
+          injectionMode: InjectionMode.CLASSIC,
+        })
+      );
+
+      rememberToken(ctor, regName);
+      registeredNames.add(regName);
+    }
+  }
+
+  // 3) Mark done only AFTER successful registration
   registeredContainers.add(container);
 };

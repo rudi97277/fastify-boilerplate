@@ -1,79 +1,60 @@
-import { DocsOf, wrapper } from "@/docs/common.docs";
+import { makeDocs, wrap } from "@/docs/common.docs";
 import { PostController } from "@/modules/posts/post.controller";
 import {
   createPostSchema,
   postIdParamSchema,
   updatePostSchema,
 } from "@/modules/posts/post.validation";
-import { toJSONSchema } from "@/utils/docs.util";
+import { HttpStatus } from "@/utils/response.util";
+import z from "zod";
 
-const postEntity = {
-  type: "object",
-  required: ["id", "title", "createdAt", "updatedAt"],
-  additionalProperties: false,
-  properties: {
-    id: { type: "number" },
-    title: { type: "string" },
-    content: { type: "string", nullable: true },
-    createdAt: { type: "string", format: "date-time" },
-    updatedAt: { type: "string", format: "date-time" },
-  },
-} as const;
+const postEntity = z.object({
+  id: z.coerce.number().positive(),
+  title: z.string(),
+  content: z.string(),
+  created_at: z.date(),
+  updated_at: z.date(),
+});
 
-export const postDocs: DocsOf<PostController> = {
+export const postDocs = makeDocs<PostController>("Posts")({
   list: {
-    tags: ["posts"],
     summary: "List posts",
     response: {
-      200: wrapper(postEntity, { isArray: true }),
+      [HttpStatus.OK]: wrap(postEntity.array()),
+      [HttpStatus.NOT_FOUND]: wrap(z.null(), {
+        success: false,
+        message: "Data tidak ditemukan",
+      }),
+      [HttpStatus.INTERNAL_SERVER_ERROR]: wrap(z.null(), {
+        success: false,
+        message: "Halo",
+      }),
     },
   },
   getById: {
-    tags: ["posts"],
     summary: "Get post by id",
-    params: toJSONSchema(postIdParamSchema),
+    params: postIdParamSchema,
     response: {
       200: postEntity,
-      404: {
-        type: "object",
-        properties: { message: { type: "string" } },
-      },
     },
   },
   create: {
-    tags: ["posts"],
     summary: "Create post",
-    body: toJSONSchema(createPostSchema),
+    body: createPostSchema,
     response: {
       201: postEntity,
     },
   },
   update: {
-    tags: ["posts"],
     summary: "Update post",
-    params: toJSONSchema(postIdParamSchema),
-    body: toJSONSchema(updatePostSchema),
+    params: postIdParamSchema,
+    body: updatePostSchema,
     response: {
       200: postEntity,
-      404: {
-        type: "object",
-        properties: { message: { type: "string" } },
-      },
     },
   },
   remove: {
-    tags: ["posts"],
     summary: "Delete post",
-    params: toJSONSchema(postIdParamSchema),
-    response: {
-      204: {
-        type: "null",
-        description: "Post deleted",
-      },
-      404: {
-        type: "object",
-        properties: { message: { type: "string" } },
-      },
-    },
+    params: postIdParamSchema,
   },
-} as const;
+});

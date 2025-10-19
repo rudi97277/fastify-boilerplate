@@ -27,7 +27,13 @@ async function decorate(app: FastifyInstance) {
       message = "Request success"
       //
     ) {
-      const payload: ApiResponse<T> = { success: true, message, data };
+      const payload: ApiResponse<T> = {
+        success: true,
+        request_id: this.request.id,
+        message,
+        data,
+      };
+      console.log(payload);
       return this.code(statusCode).send(payload);
     }
   );
@@ -40,7 +46,12 @@ async function decorate(app: FastifyInstance) {
       statusCode = HttpStatus.BAD_REQUEST,
       data: unknown = null
     ) {
-      const payload: ApiResponse = { success: false, message, data };
+      const payload: ApiResponse = {
+        success: false,
+        request_id: this.request.id,
+        message,
+        data,
+      };
       return this.code(statusCode).send(payload);
     }
   );

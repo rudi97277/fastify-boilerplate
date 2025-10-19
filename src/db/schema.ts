@@ -5,10 +5,10 @@ export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 256 }).notNull(),
   content: text("content").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: false })
+  created_at: timestamp("created_at", { withTimezone: false })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: false })
+  updated_at: timestamp("updated_at", { withTimezone: false })
     .defaultNow()
     .notNull()
     .$onUpdate(() => sql`now()`),
@@ -21,10 +21,10 @@ export const stories = pgTable("stories", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 256 }).notNull(),
   body: text("body").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: false })
+  created_at: timestamp("created_at", { withTimezone: false })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: false })
+  updated_at: timestamp("updated_at", { withTimezone: false })
     .defaultNow()
     .notNull()
     .$onUpdate(() => sql`now()`),
